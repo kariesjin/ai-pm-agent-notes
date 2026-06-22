@@ -1,0 +1,7 @@
+site_name: AI学习笔记
+site_description: 我的 AI 产品经理与 Agent 学习记录
+site_author: kariesjin
+
+theme:
+  name: material
+  language: zh
