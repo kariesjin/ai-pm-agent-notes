@@ -1,0 +1,1237 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="我的 AI 产品经理与 Agent 学习记录">
+      
+      
+        <meta name="author" content="kariesjin">
+      
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../../ai_pm/%E5%85%B8%E5%9E%8B%E9%97%AE%E9%A2%98/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>从零搭建旅游规划 Agent：LangChain 阶段实践记录 - AI学习笔记</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#agentlangchain" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="AI学习笔记" class="md-header__button md-logo" aria-label="AI学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AI学习笔记
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              从零搭建旅游规划 Agent：LangChain 阶段实践记录
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AI学习笔记" class="md-nav__button md-logo" aria-label="AI学习笔记" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AI学习笔记
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Welcome to MkDocs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Agent
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    从零搭建旅游规划 Agent：LangChain 阶段实践记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ai pm
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ai pm
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai_pm/%E5%85%B8%E5%9E%8B%E9%97%AE%E9%A2%98/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见的业务题 产品理解篇
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ai_pm/%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    模型选型
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="agentlangchain">从零搭建旅游规划 Agent：LangChain 阶段实践记录</h1>
+<pre><code>搭建这个旅游规划 Agent，一方面是为了验证近期对 LangChain、Tool Calling、Memory、用户画像等 Agent 能力的学习成果；另一方面也是为了沉淀一个可持续迭代的 AI 产品项目。
+这是第一版本，第一版本使用langchain架构，LLM Api选用deepseek。
+</code></pre>
+<h1 id="_1">项目目标</h1>
+<p><strong>根据用户需求规划旅游路线</strong></p>
+<pre><code>1、天气查询确定天气状况，如天气不适合，则向用户二次确认行程
+2、往返路线规划：根据用户给出的所在地，规划往返的行程路线
+3、旅游路线规划：根据旅游地点的网上信息，合理规划旅游路线。可以在景点推荐后追加酒店推荐
+4、行李清单：根据用户给出的信息，提供详细旅游所需要的行李清单
+5、预算计算：计算全部预算
+</code></pre>
+<h1 id="agent">Agent开始迭代！</h1>
+<h2 id="langchain-agent-v1">Langchain Agent V1 基础版</h2>
+<h3 id="_2">环境准备</h3>
+<pre><code>1、首先需要安装python，可以官网自行下载安装
+2、pip install -U langchain langchain-openai   安装 LangChain 核心框架，以及用于连接 DeepSeek/OpenAI兼容接口的模型适配包。langchain：LangChain 核心框架包    langchain-openai：LangChain 连接 OpenAI兼容模型的包
+</code></pre>
+<h3 id="_3">完整代码示例</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+
+
+# 1. 连接 DeepSeek
+llm = ChatOpenAI(
+    model=&quot;deepseek-chat&quot;,
+    api_key=&quot;你的DEEPSEEK_API_KEY&quot;,
+    base_url=&quot;https://api.deepseek.com&quot;
+)
+
+
+# 2. 定义工具：天气查询
+@tool
+def weather_tool(city: str) -&gt; str:
+    &quot;&quot;&quot;
+    查询城市天气。
+    参数 city 是城市名称，例如：东京、上海、北京。
+    &quot;&quot;&quot;
+    weather_db = {
+        &quot;东京&quot;: &quot;东京今天晴天，22°C，适合户外游玩，不太需要带伞。&quot;,
+        &quot;上海&quot;: &quot;上海今天阴天，28°C，可能有小雨，建议带伞。&quot;,
+        &quot;北京&quot;: &quot;北京今天小雨，18°C，建议带伞并安排室内景点。&quot;
+    }
+
+    return weather_db.get(city, f&quot;暂时没有查到{city}的天气信息。&quot;)
+
+
+# 3. 创建 Agent
+agent = create_agent(
+    model=llm,
+    tools=[weather_tool],
+    system_prompt=&quot;&quot;&quot;
+你是一个专业的旅游规划Agent。
+
+你的任务：
+1. 理解用户的旅游需求
+2. 如果用户的问题涉及天气、是否带伞、适合户外活动，请调用 weather_tool
+3. 根据工具结果和用户需求，生成清晰、实用的旅游建议
+4. 输出要按天规划，尽量具体
+&quot;&quot;&quot;
+)
+
+
+# 4. 命令行循环
+while True:
+    user_input = input(&quot;\n请输入旅游需求（输入 exit 退出）：&quot;)
+
+    if user_input == &quot;exit&quot;:
+        print(&quot;已退出旅游Agent。&quot;)
+        break
+
+    result = agent.invoke({
+        &quot;messages&quot;: [
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input}
+        ]
+    })
+
+    print(&quot;\n🤖 旅游Agent：&quot;)
+    print(result[&quot;messages&quot;][-1].content)
+    print(&quot;\n&quot; + &quot;-&quot; * 50)
+</code></pre>
+<h3 id="_4">代码解读</h3>
+<h4 id="llm">LLM定义</h4>
+<pre><code class="language-python">    # 1. 连接 DeepSeek
+    llm = ChatOpenAI(
+    model=&quot;deepseek-chat&quot;,
+    api_key=&quot;你的DEEPSEEK_API_KEY&quot;,
+    base_url=&quot;https://api.deepseek.com&quot;
+)
+</code></pre>
+<p>这一步用来定义项目当中用到的大模型。在Agent项目中，可能使用到多个大模型，那么在定义的时候，就通过名字进行区分。比如：</p>
+<pre><code>`planner_llm`：负责规划
+`router_llm`：负责判断任务类型
+`writer_llm`：负责最终表达润色
+</code></pre>
+<p>然后在使用时，根据需要调用大模型。</p>
+<pre><code class="language-python">    agent = create_agent(
+    model=planner_llm,
+    tools=[weather_tool, attraction_tool, budget_tool],
+    system_prompt=&quot;你是旅游规划Agent...&quot;
+)
+</code></pre>
+<h4 id="_5">工具声明</h4>
+<pre><code class="language-python"># 2. 定义工具：天气查询
+@tool
+def weather_tool(city: str) -&gt; str:
+    &quot;&quot;&quot;
+    查询城市天气。
+    参数 city 是城市名称，例如：东京、上海、北京。
+    &quot;&quot;&quot;
+    weather_db = {
+        &quot;东京&quot;: &quot;东京今天晴天，22°C，适合户外游玩，不太需要带伞。&quot;,
+        &quot;上海&quot;: &quot;上海今天阴天，28°C，可能有小雨，建议带伞。&quot;,
+        &quot;北京&quot;: &quot;北京今天小雨，18°C，建议带伞并安排室内景点。&quot;
+    }
+
+    return weather_db.get(city, f&quot;暂时没有查到{city}的天气信息。&quot;)
+</code></pre>
+<p>这一步在定义大模型能够调用的工具有哪些，同时也在变相的设定大模型的能力边界。</p>
+<p>其中的说明函数很重要：</p>
+<pre><code class="language-python">&quot;&quot;&quot;
+查询城市天气。
+参数 city 是城市名称，例如：东京、上海、北京。
+&quot;&quot;&quot;
+</code></pre>
+<p>模型会根据这段描述的内容来决定什么时候调用工具。</p>
+<p>多个工具都用@tool声明即可。</p>
+<h4 id="create_agent">Create_agent组装器</h4>
+<pre><code class="language-python">agent = create_agent(
+    model=llm,
+    tools=[weather_tool],
+    system_prompt=&quot;...&quot;
+)
+</code></pre>
+<p>这一步就是把</p>
+<pre><code>模型+工具+规则
+</code></pre>
+<p>组装成一个Agent。</p>
+<h3 id="_6">运行说明</h3>
+<pre><code>输入 python agent.py运行后，就能够成功调用大模型、工具并根据规则思考、输出。
+</code></pre>
+<h2 id="agent-v2">旅游Agent V2 版本</h2>
+<h3 id="_7">完整代码示例</h3>
+<pre><code class="language-python">from langchain.agents import create_agent
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+
+
+# 1. 连接 DeepSeek
+llm = ChatOpenAI(
+    model=&quot;deepseek-chat&quot;,
+    api_key=&quot;你的DEEPSEEK_API_KEY&quot;,
+    base_url=&quot;https://api.deepseek.com&quot;
+)
+
+
+# 2. 工具一：天气查询
+@tool
+def weather_tool(city: str) -&gt; str:
+    &quot;&quot;&quot;
+    查询城市天气。
+    当用户问到天气、温度、是否带伞、是否适合户外活动时使用。
+    参数 city 是城市名称，例如：东京、上海、北京。
+    &quot;&quot;&quot;
+    weather_db = {
+        &quot;东京&quot;: &quot;东京今天晴天，22°C，适合户外游玩，不太需要带伞。&quot;,
+        &quot;上海&quot;: &quot;上海今天阴天，28°C，可能有小雨，建议带伞。&quot;,
+        &quot;北京&quot;: &quot;北京今天小雨，18°C，建议带伞并安排室内景点。&quot;
+    }
+
+    return weather_db.get(city, f&quot;暂时没有查到{city}的天气信息。&quot;)
+
+
+# 3. 工具二：景点推荐
+@tool
+def attraction_tool(city: str, preference: str) -&gt; str:
+    &quot;&quot;&quot;
+    根据城市和用户偏好推荐景点。
+    当用户需要规划路线、推荐景点、安排每天行程时使用。
+    参数 city 是城市名称。
+    参数 preference 是用户偏好，例如：美食、购物、亲子、动漫、历史、人文、自然风景。
+    &quot;&quot;&quot;
+    attraction_db = {
+        &quot;东京&quot;: {
+            &quot;动漫&quot;: &quot;秋叶原、池袋乙女路、三鹰之森吉卜力美术馆、中野百老汇&quot;,
+            &quot;美食&quot;: &quot;筑地场外市场、新宿思出横丁、银座、浅草小吃街&quot;,
+            &quot;购物&quot;: &quot;涩谷、新宿、银座、表参道、原宿&quot;,
+            &quot;历史&quot;: &quot;浅草寺、上野公园、皇居外苑、明治神宫&quot;
+        },
+        &quot;上海&quot;: {
+            &quot;美食&quot;: &quot;城隍庙、云南南路、静安寺周边、武康路咖啡街区&quot;,
+            &quot;购物&quot;: &quot;南京西路、淮海中路、徐家汇、前滩太古里&quot;,
+            &quot;历史&quot;: &quot;外滩、豫园、武康路、上海博物馆&quot;
+        },
+        &quot;北京&quot;: {
+            &quot;历史&quot;: &quot;故宫、天坛、颐和园、八达岭长城、雍和宫&quot;,
+            &quot;美食&quot;: &quot;牛街、簋街、南锣鼓巷、前门大街&quot;,
+            &quot;亲子&quot;: &quot;北京动物园、科技馆、自然博物馆、环球影城&quot;
+        }
+    }
+
+    city_data = attraction_db.get(city)
+
+    if not city_data:
+        return f&quot;暂时没有{city}的景点数据。&quot;
+
+    result = city_data.get(preference)
+
+    if result:
+        return f&quot;{city}适合{preference}偏好的景点有：{result}。&quot;
+
+    all_attractions = &quot;；&quot;.join([f&quot;{k}：{v}&quot; for k, v in city_data.items()])
+    return f&quot;没有精确匹配到{preference}偏好，以下是{city}可选景点：{all_attractions}&quot;
+
+
+# 4. 工具三：预算估算
+@tool
+def budget_tool(city: str, days: int, level: str) -&gt; str:
+    &quot;&quot;&quot;
+    根据城市、天数和消费档位估算旅游预算。
+    当用户提到预算、花费、多少钱、费用、穷游、舒适游时使用。
+    参数 city 是城市名称。
+    参数 days 是旅行天数。
+    参数 level 是消费档位，只能是：经济、舒适、豪华。
+    &quot;&quot;&quot;
+    daily_budget = {
+        &quot;东京&quot;: {
+            &quot;经济&quot;: 600,
+            &quot;舒适&quot;: 1000,
+            &quot;豪华&quot;: 1800
+        },
+        &quot;上海&quot;: {
+            &quot;经济&quot;: 350,
+            &quot;舒适&quot;: 700,
+            &quot;豪华&quot;: 1300
+        },
+        &quot;北京&quot;: {
+            &quot;经济&quot;: 400,
+            &quot;舒适&quot;: 750,
+            &quot;豪华&quot;: 1400
+        }
+    }
+
+    city_budget = daily_budget.get(city)
+
+    if not city_budget:
+        return f&quot;暂时没有{city}的预算数据。&quot;
+
+    per_day = city_budget.get(level)
+
+    if not per_day:
+        return &quot;消费档位请输入：经济、舒适、豪华。&quot;
+
+    total = per_day * days
+
+    return f&quot;{city}{days}天{level}游的预估预算约为 {total} 元，不含大交通费用。&quot;
+
+
+# 5. 创建 Agent
+agent = create_agent(
+    model=llm,
+    tools=[weather_tool, attraction_tool, budget_tool],
+    system_prompt=&quot;&quot;&quot;
+你是一个专业的旅游规划Agent。
+
+你可以使用以下工具：
+1. weather_tool：查询天气
+2. attraction_tool：根据城市和偏好推荐景点
+3. budget_tool：估算旅游预算
+
+你的工作流程：
+1. 先理解用户的城市、天数、预算、偏好
+2. 如果问题涉及天气、带伞、户外活动，调用 weather_tool
+3. 如果问题涉及景点、路线、行程安排，调用 attraction_tool
+4. 如果问题涉及预算、费用、消费水平，调用 budget_tool
+5. 最后综合工具结果，输出一个清晰、可执行的旅游方案
+
+输出要求：
+- 按天规划
+- 每天包含上午、下午、晚上
+- 说明为什么这样安排
+- 如果工具数据不足，要明确说明，不要编造
+&quot;&quot;&quot;
+)
+
+
+# 6. 命令行循环
+while True:
+    user_input = input(&quot;\n请输入旅游需求（输入 exit 退出）：&quot;)
+
+    if user_input == &quot;exit&quot;:
+        print(&quot;已退出旅游Agent。&quot;)
+        break
+
+    result = agent.invoke({
+        &quot;messages&quot;: [
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input}
+        ]
+    })
+
+    print(&quot;\n🤖 旅游Agent：&quot;)
+    print(result[&quot;messages&quot;][-1].content)
+    print(&quot;\n&quot; + &quot;-&quot; * 50)
+</code></pre>
+<h3 id="_8">代码新增说明</h3>
+<p>与V1版本相比，V2版本增加了两个tool，分别用来查景点和查预算。</p>
+<pre><code class="language-python"># 2. 工具一：天气查询
+@tool
+def weather_tool(city: str) -&gt; str:
+    &quot;&quot;&quot;
+    查询城市天气。
+    当用户问到天气、温度、是否带伞、是否适合户外活动时使用。
+    参数 city 是城市名称，例如：东京、上海、北京。
+    &quot;&quot;&quot;
+
+# 3. 工具二：景点推荐
+@tool
+def attraction_tool(city: str, preference: str) -&gt; str:
+    &quot;&quot;&quot;
+    根据城市和用户偏好推荐景点。
+    当用户需要规划路线、推荐景点、安排每天行程时使用。
+    参数 city 是城市名称。
+    参数 preference 是用户偏好，例如：美食、购物、亲子、动漫、历史、人文、自然风景。
+    &quot;&quot;&quot;
+
+
+# 4. 工具三：预算估算
+@tool
+def budget_tool(city: str, days: int, level: str) -&gt; str:
+    &quot;&quot;&quot;
+    根据城市、天数和消费档位估算旅游预算。
+    当用户提到预算、花费、多少钱、费用、穷游、舒适游时使用。
+    参数 city 是城市名称。
+    参数 days 是旅行天数。
+    参数 level 是消费档位，只能是：经济、舒适、豪华。
+    &quot;&quot;&quot;
+</code></pre>
+<p>在create_agent中，增加了对工具的使用描述，并修改思考流程。</p>
+<pre><code class="language-python"># 5. 创建 Agent
+agent = create_agent(
+    model=llm,
+    tools=[weather_tool, attraction_tool, budget_tool],
+    system_prompt=&quot;&quot;&quot;
+你是一个专业的旅游规划Agent。
+
+你可以使用以下工具：
+1. weather_tool：查询天气
+2. attraction_tool：根据城市和偏好推荐景点
+3. budget_tool：估算旅游预算
+
+你的工作流程：
+1. 先理解用户的城市、天数、预算、偏好
+2. 如果问题涉及天气、带伞、户外活动，调用 weather_tool
+3. 如果问题涉及景点、路线、行程安排，调用 attraction_tool
+4. 如果问题涉及预算、费用、消费水平，调用 budget_tool
+5. 最后综合工具结果，输出一个清晰、可执行的旅游方案
+
+输出要求：
+- 按天规划
+- 每天包含上午、下午、晚上
+- 说明为什么这样安排
+- 如果工具数据不足，要明确说明，不要编造
+&quot;&quot;&quot;
+)
+</code></pre>
+<h2 id="agent-v3">旅游Agent V3 版本</h2>
+<p>在V1中，我们定义了Agent的基础形态，同时赋予它假的查询天气的功能，在V2版本中，增加了两个工具，分别是查询景点工具和查询预算工具，当然这些都不是真实数据，只是用来测试的固定返回值。</p>
+<p>在V3版本中，我们主要更新的是：当信息不完整时，先追问，不要乱规划。即：</p>
+<pre><code>Agent 先判断信息是否足够。
+如果足够，就规划。
+如果不够，就先追问关键问题。
+</code></pre>
+<p>在agent.py中增加一个tool。</p>
+<pre><code class="language-python">@tool
+def requirement_check_tool(user_request: str) -&gt; str:
+    &quot;&quot;&quot;
+    检查用户的旅游需求是否完整。
+    当用户只表达了模糊旅游意图，但缺少城市、天数、预算、偏好等关键信息时使用。
+    参数 user_request 是用户原始输入。
+    &quot;&quot;&quot;
+    missing_items = []
+
+    # 检查城市
+    city_keywords = [&quot;东京&quot;, &quot;上海&quot;, &quot;北京&quot;, &quot;大阪&quot;, &quot;京都&quot;, &quot;南京&quot;, &quot;杭州&quot;, &quot;苏州&quot;, &quot;成都&quot;, &quot;重庆&quot;]
+    has_city = any(city in user_request for city in city_keywords)
+    if not has_city:
+        missing_items.append(&quot;目的地城市&quot;)
+
+    # 检查天数
+    day_keywords = [&quot;1天&quot;, &quot;2天&quot;, &quot;3天&quot;, &quot;4天&quot;, &quot;5天&quot;, &quot;一日&quot;, &quot;两天&quot;, &quot;三天&quot;, &quot;四天&quot;, &quot;五天&quot;, &quot;几天&quot;]
+    has_days = any(day in user_request for day in day_keywords)
+    if not has_days:
+        missing_items.append(&quot;旅行天数&quot;)
+
+    # 检查预算
+    budget_keywords = [&quot;预算&quot;, &quot;元&quot;, &quot;块&quot;, &quot;经济&quot;, &quot;舒适&quot;, &quot;豪华&quot;, &quot;穷游&quot;, &quot;多少钱&quot;, &quot;费用&quot;]
+    has_budget = any(word in user_request for word in budget_keywords)
+    if not has_budget:
+        missing_items.append(&quot;预算或消费档位&quot;)
+
+    # 检查偏好
+    preference_keywords = [&quot;美食&quot;, &quot;购物&quot;, &quot;动漫&quot;, &quot;历史&quot;, &quot;亲子&quot;, &quot;自然&quot;, &quot;博物馆&quot;, &quot;拍照&quot;, &quot;休闲&quot;, &quot;人文&quot;]
+    has_preference = any(word in user_request for word in preference_keywords)
+    if not has_preference:
+        missing_items.append(&quot;旅行偏好&quot;)
+
+    if missing_items:
+        return &quot;用户需求信息不完整，缺少：&quot; + &quot;、&quot;.join(missing_items)
+
+    return &quot;用户需求信息基本完整，可以开始规划。&quot;
+</code></pre>
+<p>创建Agent时，修改tool列表。</p>
+<pre><code class="language-python">tools=[
+    requirement_check_tool,
+    weather_tool,
+    attraction_tool,
+    budget_tool
+    ]
+</code></pre>
+<p>同时，修改system_prompt：</p>
+<pre><code class="language-python">system_prompt=&quot;&quot;&quot;
+你是一个专业的旅游规划Agent。
+
+你可以使用以下工具：
+1. requirement_check_tool：检查用户旅游需求是否完整
+2. weather_tool：查询天气
+3. attraction_tool：根据城市和偏好推荐景点
+4. budget_tool：估算旅游预算
+
+你的工作流程必须遵守：
+
+第一步：
+如果用户的旅游需求比较模糊，例如只说“想去某地玩”“帮我安排一下”“推荐个路线”，你必须先调用 requirement_check_tool 检查信息是否完整。
+
+第二步：
+如果 requirement_check_tool 返回“用户需求信息不完整”，你不要直接生成完整行程。
+你应该先向用户追问缺失信息。
+追问时最多问 3 个最关键问题，不要一次问太多。
+
+第三步：
+如果用户需求信息基本完整，你再根据需要调用其他工具：
+- 涉及天气、带伞、户外活动，调用 weather_tool
+- 涉及景点、路线、行程安排，调用 attraction_tool
+- 涉及预算、费用、消费水平，调用 budget_tool
+
+第四步：
+综合工具结果，输出清晰、可执行的旅游方案。
+
+输出要求：
+- 信息不足时：只追问，不要强行规划
+- 信息足够时：按天规划
+- 每天包含上午、下午、晚上
+- 说明为什么这样安排
+- 如果工具数据不足，要明确说明，不要编造
+&quot;&quot;&quot;
+</code></pre>
+<p>如此，Agent会按照system_prompt中设定的工作流程执行，会在需求模糊时，调用requirement_check_tool检索信息完整性，如不完整，则追问。</p>
+<h2 id="agent-v4">旅游Agent V4 版本</h2>
+<p>在V4版本中，我们为Agent增加了多轮对话的记忆系统，能够让他记住对话。</p>
+<h4 id="_9">第一步：导入需要的包。</h4>
+<pre><code class="language-python">from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.chat_history import InMemoryChatMessageHistory
+</code></pre>
+<h4 id="memory">第二步，创建memory存储。</h4>
+<pre><code class="language-python">store = {}
+</code></pre>
+<h4 id="session-memory">第三步，定义session memory。</h4>
+<pre><code class="language-python">def get_session_history(session_id: str):
+    if session_id not in store:
+        store[session_id] = InMemoryChatMessageHistory()
+    return store[session_id]
+</code></pre>
+<h4 id="agent_1">第四步，把agent再包一层。</h4>
+<pre><code class="language-python">agent_with_memory = RunnableWithMessageHistory(
+    agent,
+    get_session_history,
+    input_messages_key=&quot;messages&quot;
+)
+</code></pre>
+<h4 id="agent_2">第五步，修改agent的调用方式。</h4>
+<pre><code class="language-python">result = agent_with_memory.invoke(
+    {
+        &quot;messages&quot;: [
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input}
+        ]
+    },
+    config={&quot;configurable&quot;: {&quot;session_id&quot;: &quot;user-1&quot;}}
+)
+</code></pre>
+<p>至此，修改完成，每轮对话的信息，Agent都会存入memory中，并在后续对话中作为context的一部分返回。</p>
+<h2 id="agent-v5">旅游Agent V5 版本</h2>
+<p>在V5版本中，我们要为Agent增加用户画像功能。用来存储用户画像，方便在后续的提问中进行格式化定制回答。</p>
+<h4 id="user_profilejson">第一步，建立user_profile.json，用于存储用户画像。</h4>
+<pre><code class="language-python">{
+  &quot;travel_preferences&quot;: [],
+  &quot;budget_preference&quot;: &quot;&quot;,
+  &quot;pace_preference&quot;: &quot;&quot;,
+  &quot;food_preference&quot;: [],
+  &quot;avoid_preferences&quot;: []
+}
+</code></pre>
+<h4 id="update_user_profile_tool">第二步，增加update_user_profile_tool，当用户表达长期偏好时更新用户画像</h4>
+<pre><code class="language-python">import json
+import os
+
+PROFILE_FILE = &quot;user_profile.json&quot;
+
+
+def load_user_profile() -&gt; dict:
+    if not os.path.exists(PROFILE_FILE):
+        return {
+            &quot;travel_preferences&quot;: [],
+            &quot;budget_preference&quot;: &quot;&quot;,
+            &quot;pace_preference&quot;: &quot;&quot;,
+            &quot;food_preference&quot;: [],
+            &quot;avoid_preferences&quot;: []
+        }
+
+    with open(PROFILE_FILE, &quot;r&quot;, encoding=&quot;utf-8&quot;) as f:
+        return json.load(f)
+
+
+def save_user_profile(profile: dict) -&gt; None:
+    with open(PROFILE_FILE, &quot;w&quot;, encoding=&quot;utf-8&quot;) as f:
+        json.dump(profile, f, ensure_ascii=False, indent=2)
+
+
+@tool
+def read_user_profile_tool() -&gt; str:
+    &quot;&quot;&quot;
+    读取用户长期旅游偏好画像。
+    当你需要根据用户过往偏好进行个性化旅游推荐时使用。
+    &quot;&quot;&quot;
+    profile = load_user_profile()
+    return json.dumps(profile, ensure_ascii=False)
+</code></pre>
+<h4 id="toolupdate_user_profile_tool">第三步，在tool列表中，增加update_user_profile_tool</h4>
+<pre><code class="language-python">tools=[
+    requirement_check_tool,
+    read_user_profile_tool,
+    update_user_profile_tool,
+    weather_tool,
+    attraction_tool,
+    budget_tool
+    ]
+</code></pre>
+<h4 id="sysem_prompt">第四步，修改sysem_prompt</h4>
+<pre><code class="language-python">你是一个专业的旅游规划Agent。
+
+你可以使用以下工具：
+1. requirement_check_tool：检查用户旅游需求是否完整
+2. read_user_profile_tool：读取用户长期旅游偏好画像
+3. update_user_profile_tool：更新用户长期旅游偏好画像
+4. weather_tool：查询天气
+5. attraction_tool：根据城市和偏好推荐景点
+6. budget_tool：估算旅游预算
+
+你的工作流程必须遵守：
+
+第一步：识别用户是否表达了长期偏好。
+如果用户说出类似：
+- 我喜欢动漫
+- 我喜欢美食
+- 我不喜欢赶行程
+- 我预算有限
+- 我喜欢慢节奏旅行
+你应该调用 update_user_profile_tool 更新用户画像。
+
+第二步：在做旅游规划前，优先调用 read_user_profile_tool 读取用户画像。
+如果用户本轮没有说明偏好，但画像里有偏好，你要结合画像做个性化推荐。
+
+第三步：如果用户的旅游需求比较模糊，例如只说“想去某地玩”“帮我安排一下”“推荐个路线”，你必须先调用 requirement_check_tool 检查信息是否完整。
+
+第四步：
+如果 requirement_check_tool 返回“用户需求信息不完整”，你不要直接生成完整行程。
+你应该先向用户追问缺失信息。
+追问时最多问 3 个最关键问题，不要一次问太多。
+
+第五步：
+如果用户需求信息基本完整，你再根据需要调用其他工具：
+- 涉及天气、带伞、户外活动，调用 weather_tool
+- 涉及景点、路线、行程安排，调用 attraction_tool
+- 涉及预算、费用、消费水平，调用 budget_tool
+
+第六步：
+综合用户画像、本轮需求和工具结果，输出清晰、可执行的旅游方案。
+
+输出要求：
+- 信息不足时：只追问，不要强行规划
+- 信息足够时：按天规划
+- 每天包含上午、下午、晚上
+- 明确说明哪些推荐是基于用户画像
+- 如果工具数据不足，要明确说明，不要编造
+</code></pre>
+<p>至此，V5版本的Agent就有了用户画像记忆与调用功能。</p>
+<h2 id="agent-v6">旅游Agent V6 版本</h2>
+<p>V6 是本项目 LangChain 阶段的收尾版本。后续会将当前能力迁移到 LangGraph，用图结构显式管理流程节点和状态。
+更新点主要有两点。</p>
+<pre><code>1、增加 Agent 执行链路可视化，即调试信息显示.这里看到的是 Agent 的执行链路和工具调用日志，不是模型内部真实思考过程.
+2、优化Agent的输出格式
+</code></pre>
+<h4 id="_10">第一步，引入所需的库</h4>
+<pre><code class="language-python">from langchain_core.tracers.stdout import ConsoleCallbackHandler
+</code></pre>
+<h4 id="_11">第二步，开启调试</h4>
+<pre><code class="language-python"> result = agent_with_memory.invoke(
+        {
+        &quot;messages&quot;: [
+            {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: user_input}
+            ]
+        },
+        config={&quot;configurable&quot;: {&quot;session_id&quot;: &quot;user-1&quot;},
+                 &quot;callbacks&quot;: [ConsoleCallbackHandler()]
+        }
+    )
+</code></pre>
+<h4 id="_12">运行后，就能看到模型的思考执行过程，大致过程如下：</h4>
+<pre><code class="language-markdown">[llm/start] ChatOpenAI 接收用户输入
+tool_calls:
+- weather_tool(city=&quot;东京&quot;)
+- attraction_tool(city=&quot;东京&quot;, preference=&quot;动漫&quot;)
+- attraction_tool(city=&quot;东京&quot;, preference=&quot;美食&quot;)
+- budget_tool(city=&quot;东京&quot;, days=3, level=&quot;经济&quot;)
+
+[tool/end] weather_tool -&gt; {&quot;weather&quot;: &quot;晴天&quot;, &quot;temp&quot;: 22, &quot;suggest&quot;: &quot;适合户外&quot;}
+[tool/end] attraction_tool -&gt; 东京适合动漫偏好的景点有：秋叶原...
+[tool/end] budget_tool -&gt; 东京3天经济游的预估预算约为 1800 元
+</code></pre>
+<p>通过这段日志，可以确认 Agent 并不是直接生成答案，而是先识别任务，再调用多个工具，最后融合工具结果生成最终行程。</p>
+<h4 id="system_prompt">第四步，在system_prompt中增加输出的结构化约束语句。</h4>
+<pre><code class="language-python">    system_prompt=&quot;&quot;&quot;
+你是一个专业的旅游规划Agent。
+
+你可以使用以下工具：
+1. requirement_check_tool：检查用户旅游需求是否完整
+2. read_user_profile_tool：读取用户长期旅游偏好画像
+3. update_user_profile_tool：更新用户长期旅游偏好画像
+4. weather_tool：查询天气
+5. attraction_tool：根据城市和偏好推荐景点
+6. budget_tool：估算旅游预算
+
+你的工作流程必须遵守：
+
+第一步：识别用户是否表达了长期偏好。
+如果用户说出类似：
+- 我喜欢动漫
+- 我喜欢美食
+- 我不喜欢赶行程
+- 我预算有限
+- 我喜欢慢节奏旅行
+你应该调用 update_user_profile_tool 更新用户画像。
+
+第二步：在做旅游规划前，优先调用 read_user_profile_tool 读取用户画像。
+如果用户本轮没有说明偏好，但画像里有偏好，你要结合画像做个性化推荐。
+
+第三步：如果用户的旅游需求比较模糊，例如只说“想去某地玩”“帮我安排一下”“推荐个路线”，你必须先调用 requirement_check_tool 检查信息是否完整。
+
+第四步：
+如果 requirement_check_tool 返回“用户需求信息不完整”，你不要直接生成完整行程。
+你应该先向用户追问缺失信息。
+追问时最多问 3 个最关键问题，不要一次问太多。
+
+第五步：
+如果用户需求信息基本完整，你再根据需要调用其他工具：
+- 涉及天气、带伞、户外活动，调用 weather_tool
+- 涉及景点、路线、行程安排，调用 attraction_tool
+- 涉及预算、费用、消费水平，调用 budget_tool
+
+第六步：
+综合用户画像、本轮需求和工具结果，输出清晰、可执行的旅游方案。
+
+输出要求：
+- 信息不足时：只追问，不要强行规划
+- 信息足够时：按天规划
+- 每天包含上午、下午、晚上
+- 明确说明哪些推荐是基于用户画像
+- 如果工具数据不足，要明确说明，不要编造
+
+输出必须严格遵守结构：
+
+{
+  &quot;destination&quot;: &quot;&quot;,
+  &quot;days&quot;: &quot;&quot;,
+  &quot;itinerary&quot;: [
+    {
+      &quot;day&quot;: 1,
+      &quot;morning&quot;: &quot;&quot;,
+      &quot;afternoon&quot;: &quot;&quot;,
+      &quot;evening&quot;: &quot;&quot;
+    }
+  ],
+  &quot;budget_estimate&quot;: &quot;&quot;,
+  &quot;notes&quot;: &quot;&quot;
+}
+&quot;&quot;&quot;
+</code></pre>
+<p>至此，一个简单的旅游Agent项目就算是完成了。只要把tool改成真实的API调用，就能进行真实的旅游路线规划。</p>
+<h2 id="_13">当前版本限制</h2>
+<ol>
+<li>天气、景点、预算工具目前仍是 mock 数据，并未接入真实 API。</li>
+<li>用户画像目前存储在本地 JSON 文件中，不支持多用户隔离和数据库持久化。</li>
+<li>需求检查工具基于关键词规则，泛化能力有限。</li>
+<li>输出格式主要依赖 system_prompt 约束，尚未使用 Pydantic 或 JSON Schema 做强校验。</li>
+<li>当前流程仍主要由 LLM 自主决策工具调用，流程控制不够显式；下一阶段将使用 LangGraph 进行节点化改造。</li>
+</ol>
+<h1 id="_14">总结</h1>
+<p>到 V6 为止，本项目已经完成了一个旅游规划 Agent 的 LangChain 阶段闭环：</p>
+<ul>
+<li>使用 DeepSeek 作为大模型；</li>
+<li>使用 LangChain <code>create_agent</code> 构建 Tool Calling Agent；</li>
+<li>通过 <code>@tool</code> 定义天气、景点、预算、需求检查、用户画像等工具；</li>
+<li>使用 <code>RunnableWithMessageHistory</code> 实现会话级短期记忆；</li>
+<li>使用本地 JSON 文件实现用户画像长期记忆；</li>
+<li>通过 ConsoleCallbackHandler 观察 Agent 执行链路；</li>
+<li>通过 system_prompt 约束输出结构。</li>
+</ul>
+<p>下一阶段将迁移到 LangGraph，把当前由 prompt 驱动的流程，改造成显式的图结构流程，例如：</p>
+<p>Planner Node → Requirement Check Node → Memory Node → Tool Node → Final Response Node</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
